@@ -27,6 +27,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   get_storage:
   get:
+  intl:
+  google_fonts:
   flutter_local_notifications:
   flutter_native_timezone:
 dev_dependencies:
