@@ -1,6 +1,6 @@
-# iris
+# Iris
 
-A new project.
+An app to help track blood glucose measurements.
 
 ## Getting Started
 
