@@ -4,6 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:iris/screens/add_task_bar.dart';
 import 'package:iris/services/notification_services.dart';
 import 'package:iris/services/theme_services.dart';
 import 'package:iris/utils/theme.dart';
@@ -98,9 +99,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          const MyButton(
+          MyButton(
             label: "+ Add Task",
-            onTap: null,
+            onTap: () => Get.to(const AddTaskPage()),
           ),
         ],
       ),
