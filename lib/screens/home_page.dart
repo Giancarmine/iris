@@ -42,44 +42,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _addDataBar() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, left: 20),
-      child: DatePicker(
-        DateTime.now(),
-        height: 100,
-        width: 80,
-        initialSelectedDate: DateTime.now(),
-        selectionColor: primaryClr,
-        selectedTextColor: Colors.white,
-        dateTextStyle: GoogleFonts.lato(
-          textStyle: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey,
-          ),
-        ),
-        dayTextStyle: GoogleFonts.lato(
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey,
-          ),
-        ),
-        monthTextStyle: GoogleFonts.lato(
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey,
-          ),
-        ),
-        onDateChange: (date) {
-          _selectedDate = date;
-        },
-      ),
-    );
-  }
-
   _addTaskBar() {
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -139,6 +101,46 @@ class _HomePageState extends State<HomePage> {
           width: 20,
         ),
       ],
+    );
+  }
+
+  _addDataBar() {
+    var todayDate = DateTime(2018, 1, 13);
+
+    return Container(
+      margin: const EdgeInsets.only(top: 20, left: 20),
+      child: DatePicker(
+        DateTime(todayDate.year, todayDate.month, todayDate.day - 3),
+        height: 100,
+        width: 80,
+        initialSelectedDate: todayDate,
+        selectionColor: primaryClr,
+        selectedTextColor: Colors.white,
+        dateTextStyle: GoogleFonts.lato(
+          textStyle: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        ),
+        dayTextStyle: GoogleFonts.lato(
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        ),
+        monthTextStyle: GoogleFonts.lato(
+          textStyle: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey,
+          ),
+        ),
+        onDateChange: (date) {
+          _selectedDate = date;
+        },
+      ),
     );
   }
 }
