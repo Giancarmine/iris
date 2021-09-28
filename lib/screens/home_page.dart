@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _addDataBar() {
-    var todayDate = DateTime(2018, 1, 13);
+    var todayDate = DateTime.now();
 
     return Container(
       margin: const EdgeInsets.only(top: 20, left: 20),
@@ -140,6 +140,7 @@ class _HomePageState extends State<HomePage> {
         onDateChange: (date) {
           _selectedDate = date;
         },
+        locale: "it_IT",
       ),
     );
   }
