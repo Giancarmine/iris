@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:iris/db/db_helper.dart';
+import 'package:iris/models/task.dart';
 import 'package:iris/screens/home_page.dart';
 import 'package:iris/services/theme_services.dart';
 import 'package:iris/utils/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.initDB();
   await GetStorage.init();
   runApp(const MyApp());
 }
