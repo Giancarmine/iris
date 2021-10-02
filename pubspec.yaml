@@ -32,7 +32,9 @@ dependencies:
   date_picker_timeline:
   flutter_local_notifications:
   flutter_native_timezone:
-  sqflite: 
+  sqflite:
+  rxdart:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -56,8 +58,8 @@ flutter_icons:
 flutter:
 
   uses-material-design: true
-#  assets:
-#    - images/icon_logo.jpeg
+  #  assets:
+  #    - images/icon_logo.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

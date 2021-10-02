@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:iris/controllers/task_controller.dart';
 import 'package:iris/screens/add_task_bar.dart';
 import 'package:iris/services/notification_services.dart';
 import 'package:iris/services/theme_services.dart';
@@ -18,7 +22,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DateTime _selectedDate = DateTime.now();
+  DateTime _selectedDate = DateTime.parse(DateTime.now().toString());
+  final _taskController = Get.put(TaskController());
   var notifyHelper;
 
   @override
@@ -63,7 +68,10 @@ class _HomePageState extends State<HomePage> {
           ),
           MyButton(
             label: "+ Add Task",
-            onTap: () => Get.to(const AddTaskPage()),
+            onTap: () async {
+              await Get.to(const AddTaskPage());
+              _taskController.getTasks();
+            },
           ),
         ],
       ),
@@ -140,7 +148,7 @@ class _HomePageState extends State<HomePage> {
         onDateChange: (date) {
           _selectedDate = date;
         },
-        locale: "it_IT",
+        locale: Platform.localeName, //"it_IT",
       ),
     );
   }

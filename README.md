@@ -2,6 +2,10 @@
 
 An app to help track blood glucose measurements.
 
+
+https://www.youtube.com/watch?v=6SaCntGgi5o
+https://dribbble.com/shots/14557819-Task-Management-App
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
