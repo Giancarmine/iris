@@ -200,21 +200,21 @@ class _HomePageState extends State<HomePage> {
                   DateTime date = DateFormat.jm().parse(task.startTime!);
                   var myTime = DateFormat("HH:mm").format(date);
 
-                  print("my date " + date.toString());
-                  print("my time " + myTime);
-                  var t = DateFormat("M/d/yyyy hh:mm a")
-                      .parse(task.date! + " " + task.startTime!);
-                  print(t);
-                  print(int.parse(myTime.toString().split(":")[0]));
-
-                  notifyHelper.scheduledNotification(
-                      int.parse(myTime.toString().split(":")[0]),
-                      int.parse(myTime.toString().split(":")[1]),
-                      task);
+                  // print("my date " + date.toString());
+                  // print("my time " + myTime);
+                  // var t = DateFormat("M/d/yyyy hh:mm a")
+                  //     .parse(task.date! + " " + task.startTime!);
+                  // print(t);
+                  // print(int.parse(myTime.toString().split(":")[0]));
+                  //
+                  // notifyHelper.scheduledNotification(
+                  //     int.parse(myTime.toString().split(":")[0]),
+                  //     int.parse(myTime.toString().split(":")[1]),
+                  //     task);
 
                   return AnimationConfiguration.staggeredList(
                     position: index,
-                    duration: const Duration(milliseconds: 1375),
+                    duration: const Duration(milliseconds: 500),
                     child: SlideAnimation(
                       horizontalOffset: 300.0,
                       child: FadeInAnimation(
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             GestureDetector(
                                 onTap: () {
-                                  // showBottomSheet(context, task);
+                                  showBottomSheet(context, task);
                                 },
                                 child: TaskTile(task)),
                           ],
@@ -236,7 +236,7 @@ class _HomePageState extends State<HomePage> {
                   //notifyHelper.scheduledNotification();
                   return AnimationConfiguration.staggeredList(
                     position: index,
-                    duration: const Duration(milliseconds: 1375),
+                    duration: const Duration(milliseconds: 500),
                     child: SlideAnimation(
                       horizontalOffset: 300.0,
                       child: FadeInAnimation(
@@ -245,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             GestureDetector(
                                 onTap: () {
-                                  // showBottomSheet(context, task);
+                                  showBottomSheet(context, task);
                                 },
                                 child: TaskTile(task)),
                           ],
@@ -259,6 +259,91 @@ class _HomePageState extends State<HomePage> {
               });
         }
       }),
+    );
+  }
+
+  showBottomSheet(BuildContext context, Task task) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.only(top: 4),
+        height: task.isCompleted == 1
+            ? SizeConfig.screenHeight! * 0.24
+            : SizeConfig.screenHeight! * 0.32,
+        width: SizeConfig.screenWidth,
+        color: Get.isDarkMode ? darkHeaderClr : Colors.white,
+        child: Column(children: [
+          Container(
+            height: 6,
+            width: 120,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
+          ),
+          const Spacer(),
+          task.isCompleted == 1
+              ? Container()
+              : _buildBottomSheetButton(
+                  label: "Task Completed",
+                  onTap: () {
+                    _taskController.markTaskCompleted(task.id!);
+                    Get.back();
+                  },
+                  clr: primaryClr),
+          _buildBottomSheetButton(
+              label: "Delete Task",
+              onTap: () {
+                _taskController.deleteTask(task);
+                Get.back();
+              },
+              clr: Colors.red.shade300),
+          const SizedBox(
+            height: 20,
+          ),
+          _buildBottomSheetButton(
+              label: "Close",
+              onTap: () {
+                Get.back();
+              },
+              isClose: true),
+          const SizedBox(
+            height: 20,
+          ),
+        ]),
+      ),
+    );
+  }
+
+  _buildBottomSheetButton(
+      {required String label,
+      required VoidCallback onTap,
+      Color? clr,
+      bool isClose = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        height: 55,
+        width: SizeConfig.screenWidth! * 0.9,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 2,
+            color: isClose
+                ? Get.isDarkMode
+                    ? Colors.grey.shade600
+                    : Colors.grey.shade300
+                : clr!,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          color: isClose ? Colors.transparent : clr,
+        ),
+        child: Center(
+            child: Text(
+          label,
+          style: isClose
+              ? titleTextStyle
+              : titleTextStyle.copyWith(color: Colors.white),
+        )),
+      ),
     );
   }
 
