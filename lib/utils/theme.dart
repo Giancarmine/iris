@@ -63,3 +63,39 @@ TextStyle get subTitleStyle {
     ),
   );
 }
+
+TextStyle get titleTextStyle {
+  return GoogleFonts.lato(
+    textStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Get.isDarkMode ? Colors.white : Colors.black),
+  );
+}
+
+TextStyle get subTitleTextStyle {
+  return GoogleFonts.lato(
+    textStyle: TextStyle(
+        fontSize: 16,
+        color: Get.isDarkMode ? Colors.grey[400] : Colors.grey[700]),
+  );
+}
+
+
+TextStyle get bodyTextStyle {
+  return GoogleFonts.lato(
+    textStyle: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: Get.isDarkMode ? Colors.white : Colors.black),
+  );
+}
+
+TextStyle get body2TextStyle {
+  return GoogleFonts.lato(
+    textStyle: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: Get.isDarkMode ? Colors.grey[200] : Colors.grey[600]),
+  );
+}

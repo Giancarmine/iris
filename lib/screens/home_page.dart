@@ -1,18 +1,25 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:iris/controllers/task_controller.dart';
+import 'package:iris/models/task.dart';
 import 'package:iris/screens/add_task_bar.dart';
 import 'package:iris/services/notification_services.dart';
 import 'package:iris/services/theme_services.dart';
+import 'package:iris/utils/size_config.dart';
 import 'package:iris/utils/theme.dart';
 import 'package:iris/widgets/button.dart';
+import 'package:iris/widgets/task_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,6 +32,10 @@ class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.parse(DateTime.now().toString());
   final _taskController = Get.put(TaskController());
   var notifyHelper;
+  bool animate = false;
+  double left = 630;
+  double top = 900;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -32,16 +43,28 @@ class _HomePageState extends State<HomePage> {
     notifyHelper = NotifyHelper();
     notifyHelper.initializeNotification();
     notifyHelper.requestIOSPermissions();
+    _timer = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        animate = true;
+        left = 30;
+        top = top / 3;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(),
       body: Column(
         children: [
           _addTaskBar(),
           _addDataBar(),
+          const SizedBox(
+            height: 12,
+          ),
+          _showTasks(),
         ],
       ),
     );
@@ -59,6 +82,9 @@ class _HomePageState extends State<HomePage> {
               Text(
                 DateFormat.yMMMMd().format(DateTime.now()),
                 style: subHeadingStyle,
+              ),
+              const SizedBox(
+                height: 10,
               ),
               Text(
                 "Today",
@@ -146,10 +172,126 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         onDateChange: (date) {
-          _selectedDate = date;
+          setState(() {
+            _selectedDate = date;
+          });
         },
         locale: Platform.localeName, //"it_IT",
       ),
+    );
+  }
+
+  _showTasks() {
+    return Expanded(
+      child: Obx(() {
+        if (_taskController.taskList.isEmpty) {
+          return _noTaskMsg();
+        } else {
+          return ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: _taskController.taskList.length,
+              itemBuilder: (context, index) {
+                Task task = _taskController.taskList[index];
+                if (task.repeat == 'Daily') {
+                  var hour = task.startTime.toString().split(":")[0];
+                  var minutes = task.startTime.toString().split(":")[1];
+                  debugPrint("My time is " + hour);
+                  debugPrint("My minute is " + minutes);
+                  DateTime date = DateFormat.jm().parse(task.startTime!);
+                  var myTime = DateFormat("HH:mm").format(date);
+
+                  print("my date " + date.toString());
+                  print("my time " + myTime);
+                  var t = DateFormat("M/d/yyyy hh:mm a")
+                      .parse(task.date! + " " + task.startTime!);
+                  print(t);
+                  print(int.parse(myTime.toString().split(":")[0]));
+
+                  notifyHelper.scheduledNotification(
+                      int.parse(myTime.toString().split(":")[0]),
+                      int.parse(myTime.toString().split(":")[1]),
+                      task);
+
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 1375),
+                    child: SlideAnimation(
+                      horizontalOffset: 300.0,
+                      child: FadeInAnimation(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                                onTap: () {
+                                  // showBottomSheet(context, task);
+                                },
+                                child: TaskTile(task)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                if (task.date == DateFormat.yMd().format(_selectedDate)) {
+                  //notifyHelper.scheduledNotification();
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 1375),
+                    child: SlideAnimation(
+                      horizontalOffset: 300.0,
+                      child: FadeInAnimation(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                                onTap: () {
+                                  // showBottomSheet(context, task);
+                                },
+                                child: TaskTile(task)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              });
+        }
+      }),
+    );
+  }
+
+  _noTaskMsg() {
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "images/task.svg",
+                color: primaryClr.withOpacity(0.5),
+                height: 90,
+                semanticsLabel: 'Task',
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: Text(
+                  "You do not have any tasks yet!\nAdd new tasks to make your days productive.",
+                  textAlign: TextAlign.center,
+                  style: subTitleTextStyle,
+                ),
+              ),
+              const SizedBox(
+                height: 80,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
