@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
               MyButton(
                 icon: FontAwesomeIcons.eyeDropper,
                 onTap: () async {
-                  await Get.to(() => const AddMeasurementPage());
+                  await Get.to(() => AddMeasurementPage(notifyHelper: notifyHelper,));
                   _measurementController.getMeasurements();
                 },
                 color: Colors.red,
@@ -132,8 +132,6 @@ class _HomePageState extends State<HomePage> {
               body: Get.isDarkMode
                   ? "Activated Light Theme"
                   : "Activated Dark Theme");
-
-          notifyHelper.scheduledNotification();
         },
         child: Icon(
           Get.isDarkMode ? Icons.wb_sunny_outlined : Icons.nightlight_round,
@@ -207,7 +205,8 @@ class _HomePageState extends State<HomePage> {
               scrollDirection: Axis.vertical,
               itemCount: _measurementController.measurementList.length,
               itemBuilder: (context, index) {
-                Measurement measurement = _measurementController.measurementList[index];
+                Measurement measurement =
+                    _measurementController.measurementList[index];
                 if (measurement.date ==
                     DateFormat.yMd().format(_selectedDate)) {
                   //notifyHelper.scheduledNotification();

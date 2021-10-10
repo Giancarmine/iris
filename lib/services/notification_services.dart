@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:iris/screens/add_measurement.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -36,23 +37,22 @@ class NotifyHelper {
     } else {
       print("Notification Done");
     }
-    Get.to(() => Container(
-          color: Colors.white,
-        ));
+    Get.to(() => AddMeasurementPage());
   }
 
-  scheduledNotification() async {
+  scheduledNotification(String title, String description, int hours) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
         0,
-        'scheduled title',
-        'theme changes 5 seconds ago',
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        title,
+        description,
+        tz.TZDateTime.now(tz.local).add(Duration(hours: hours)),
         const NotificationDetails(
-            android: AndroidNotificationDetails(
-          'your channel id',
-          'your channel name',
-          'your channel description',
-        )),
+          android: AndroidNotificationDetails(
+            'your channel id',
+            'your channel name',
+            'your channel description',
+          ),
+        ),
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime);

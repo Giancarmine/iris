@@ -8,14 +8,17 @@ import 'package:iris/widgets/button.dart';
 import 'package:iris/widgets/input_field.dart';
 
 class AddMeasurementPage extends StatefulWidget {
-  const AddMeasurementPage({Key? key}) : super(key: key);
+  AddMeasurementPage({Key? key, this.notifyHelper}) : super(key: key);
+
+  final notifyHelper;
 
   @override
   State<AddMeasurementPage> createState() => _AddMeasurementPageState();
 }
 
 class _AddMeasurementPageState extends State<AddMeasurementPage> {
-  final MeasurementController _measurementController = Get.put(MeasurementController());
+  final MeasurementController _measurementController =
+      Get.put(MeasurementController());
 
   final TextEditingController _valueController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
@@ -47,7 +50,7 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
                 style: headingStyle,
               ),
               MyInputField(
-                title: "* Diabetes value",
+                title: "Diabetes value",
                 hint: "Enter the measured value",
                 controller: _valueController,
                 keyboardType: TextInputType.number,
@@ -133,8 +136,13 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
   }
 
   _validateData() {
-    if (_valueController.text.isNotEmpty) {
+    if (_valueController.text.isNotEmpty &&
+        _valueController.text.isNumericOnly) {
       _addMeasurementToDB();
+      if (_selectedReminder != 0) {
+        // notifyHelper.scheduledNotification('It is the time!',
+        //     'Let\'s add a new measurement', _selectedReminder);
+      }
       Get.back();
     } else {
       Get.snackbar(
