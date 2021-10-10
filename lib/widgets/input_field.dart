@@ -7,6 +7,7 @@ class MyInputField extends StatelessWidget {
   final String hint;
   final TextEditingController? controller;
   final Widget? widget;
+  final TextInputType? keyboardType;
 
   const MyInputField({
     Key? key,
@@ -14,6 +15,7 @@ class MyInputField extends StatelessWidget {
     required this.hint,
     this.controller,
     this.widget,
+    this.keyboardType,
   }) : super(key: key);
 
   @override
@@ -42,10 +44,12 @@ class MyInputField extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
+                    keyboardType: keyboardType ?? TextInputType.text,
                     readOnly: widget == null ? false : true,
                     autofocus: false,
-                    cursorColor:
-                        Get.isDarkMode ? Colors.grey[100] : Colors.grey[600],
+                    cursorColor: Get.isDarkMode
+                        ? Colors.grey.shade100
+                        : Colors.grey.shade600,
                     controller: controller,
                     style: subTitleStyle,
                     decoration: InputDecoration(

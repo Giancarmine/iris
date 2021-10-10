@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const Color bluishClr = Color(0xFF4e5ae8);
+const Color purpleClr = Colors.deepPurpleAccent;
 const Color yellowClr = Color(0xFFFFB746);
+const Color greenClr = Colors.green;
 const Color pinkClr = Color(0xFFff4667);
 const Color white = Colors.white;
 const primaryClr = bluishClr;
@@ -59,7 +61,7 @@ TextStyle get subTitleStyle {
     textStyle: TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.w400,
-      color: Get.isDarkMode ? Colors.grey[100] : Colors.grey[400],
+      color: Get.isDarkMode ? Colors.grey.shade100 : Colors.grey.shade400,
     ),
   );
 }
@@ -77,10 +79,9 @@ TextStyle get subTitleTextStyle {
   return GoogleFonts.lato(
     textStyle: TextStyle(
         fontSize: 16,
-        color: Get.isDarkMode ? Colors.grey[400] : Colors.grey[700]),
+        color: Get.isDarkMode ? Colors.grey.shade400 : Colors.grey.shade700),
   );
 }
-
 
 TextStyle get bodyTextStyle {
   return GoogleFonts.lato(
@@ -96,6 +97,6 @@ TextStyle get body2TextStyle {
     textStyle: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: Get.isDarkMode ? Colors.grey[200] : Colors.grey[600]),
+        color: Get.isDarkMode ? Colors.grey.shade200 : Colors.grey.shade600),
   );
 }

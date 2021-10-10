@@ -1,44 +1,35 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:iris/controllers/task_controller.dart';
-import 'package:iris/models/task.dart';
+import 'package:iris/controllers/measurement_controller.dart';
+import 'package:iris/models/measurement.dart';
 import 'package:iris/utils/theme.dart';
 import 'package:iris/widgets/button.dart';
 import 'package:iris/widgets/input_field.dart';
 
-class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({Key? key}) : super(key: key);
+class AddMeasurementPage extends StatefulWidget {
+  const AddMeasurementPage({Key? key}) : super(key: key);
 
   @override
-  State<AddTaskPage> createState() => _AddTaskPageState();
+  State<AddMeasurementPage> createState() => _AddMeasurementPageState();
 }
 
-class _AddTaskPageState extends State<AddTaskPage> {
-  final TaskController _taskController = Get.put(TaskController());
+class _AddMeasurementPageState extends State<AddMeasurementPage> {
+  final MeasurementController _measurementController = Get.put(MeasurementController());
 
-  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _valueController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  String _endTime = "9:30 PM";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   int _selectedReminder = 2;
   List<int> reminderList = [
+    0,
     1,
     2,
     3,
     4,
     5,
   ];
-  String _selectedRepeat = "None";
-  List<String> repeatList = [
-    "None",
-    "Daily",
-    "Weekly",
-    "Monthly",
-  ];
-  int _selectedColor = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -52,17 +43,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Add Task",
+                "Add Measurement",
                 style: headingStyle,
               ),
               MyInputField(
-                title: "Title",
-                hint: "Enter your title",
-                controller: _titleController,
+                title: "* Diabetes value",
+                hint: "Enter the measured value",
+                controller: _valueController,
+                keyboardType: TextInputType.number,
               ),
               MyInputField(
                   title: "Note",
-                  hint: "Enter your note",
+                  hint: "Enter a note",
                   controller: _noteController),
               MyInputField(
                 title: "Date",
@@ -86,24 +78,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       widget: IconButton(
                         onPressed: () {
                           _getTimeFormUser(isStartTime: true);
-                        },
-                        icon: const Icon(
-                          Icons.access_time_rounded,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                    child: MyInputField(
-                      title: "End Date",
-                      hint: _endTime,
-                      widget: IconButton(
-                        onPressed: () {
-                          _getTimeFormUser(isStartTime: false);
                         },
                         icon: const Icon(
                           Icons.access_time_rounded,
@@ -142,42 +116,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   }).toList(),
                 ),
               ),
-              MyInputField(
-                title: "Repeat",
-                hint: _selectedRepeat,
-                widget: DropdownButton(
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down,
-                    color: Colors.grey,
-                  ),
-                  iconSize: 32,
-                  elevation: 4,
-                  style: subTitleStyle,
-                  underline: Container(
-                    height: 0,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedRepeat = newValue!;
-                    });
-                  },
-                  items:
-                      repeatList.map<DropdownMenuItem<String>>((String? value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value!,
-                          style: const TextStyle(color: Colors.grey)),
-                    );
-                  }).toList(),
-                ),
-              ),
               const SizedBox(height: 18),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _colorPalette(),
-                  MyButton(label: "Create Task", onTap: () => _validateData())
+                  MyButton(
+                      label: "Add Measurement", onTap: () => _validateData())
                 ],
               )
             ],
@@ -188,13 +133,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   _validateData() {
-    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
-      _addTaskToDB();
+    if (_valueController.text.isNotEmpty) {
+      _addMeasurementToDB();
       Get.back();
-    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+    } else {
       Get.snackbar(
         "Required",
-        "All fields are required!",
+        "Please insert the measurement value!",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.white,
         colorText: pinkClr,
@@ -206,65 +151,20 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
-  _addTaskToDB() async {
-    int value = await _taskController.addTask(
-      task: Task(
-        title: _titleController.text,
+  _addMeasurementToDB() async {
+    int value = await _measurementController.addMeasurement(
+      measurement: Measurement(
+        value: int.parse(_valueController.text),
         note: _noteController.text,
         date: DateFormat.yMd().format(_selectedDate),
-        startTime: _startTime,
-        endTime: _endTime,
+        time: _startTime,
+        color: _evaluateColor(),
         remind: _selectedReminder,
-        repeat: _selectedRepeat,
-        color: _selectedColor,
-        isCompleted: 0,
+        type: 0,
       ),
     );
 
     print("My value is $value");
-  }
-
-  _colorPalette() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Color",
-          style: titleStyle,
-        ),
-        const SizedBox(height: 8.0),
-        Wrap(
-          children: List<Widget>.generate(3, (int index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedColor = index;
-                  print("$index");
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: CircleAvatar(
-                  radius: 14,
-                  backgroundColor: index == 0
-                      ? primaryClr
-                      : index == 1
-                          ? pinkClr
-                          : yellowClr,
-                  child: _selectedColor == index
-                      ? const Icon(
-                          Icons.done,
-                          color: Colors.white,
-                          size: 16,
-                        )
-                      : Container(),
-                ),
-              ),
-            );
-          }),
-        )
-      ],
-    );
   }
 
   _appBar(BuildContext context) {
@@ -321,11 +221,23 @@ class _AddTaskPageState extends State<AddTaskPage> {
       setState(() {
         _startTime = _formattedTime;
       });
-    } else if (isStartTime == false) {
-      setState(() {
-        _endTime = _formattedTime;
-      });
     }
+  }
+
+  _evaluateColor() {
+    int? result = 0;
+    int value = int.parse(_valueController.text);
+    if (value >= 60 && value <= 110) {
+      result = 1;
+    } else if (value > 110 && value <= 125) {
+      result = 2;
+    } else if (value >= 126 && value < 140) {
+      result = 3;
+    } else if (value >= 140 && value <= 200) {
+      result = 4;
+    }
+
+    return result;
   }
 
   _showTimePicker() {

@@ -5,21 +5,22 @@ import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:iris/controllers/task_controller.dart';
-import 'package:iris/models/task.dart';
-import 'package:iris/screens/add_task_bar.dart';
+import 'package:iris/controllers/measurement_controller.dart';
+import 'package:iris/models/measurement.dart';
+import 'package:iris/screens/add_measurement.dart';
 import 'package:iris/services/notification_services.dart';
 import 'package:iris/services/theme_services.dart';
 import 'package:iris/utils/size_config.dart';
 import 'package:iris/utils/theme.dart';
 import 'package:iris/widgets/button.dart';
-import 'package:iris/widgets/task_tile.dart';
+import 'package:iris/widgets/measurement_tile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.parse(DateTime.now().toString());
-  final _taskController = Get.put(TaskController());
+  final _measurementController = Get.put(MeasurementController());
   var notifyHelper;
   bool animate = false;
   double left = 630;
@@ -64,7 +65,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 12,
           ),
-          _showTasks(),
+          _showMeasurements(),
         ],
       ),
     );
@@ -92,12 +93,27 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          MyButton(
-            label: "+ Add Task",
-            onTap: () async {
-              await Get.to(const AddTaskPage());
-              _taskController.getTasks();
-            },
+          Column(
+            children: [
+              MyButton(
+                icon: Icons.alarm_add,
+                onTap: () async {
+                  // await Get.to(const AddReminderPage());
+                  _measurementController.getMeasurements();
+                },
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              MyButton(
+                icon: FontAwesomeIcons.eyeDropper,
+                onTap: () async {
+                  await Get.to(() => const AddMeasurementPage());
+                  _measurementController.getMeasurements();
+                },
+                color: Colors.red,
+              ),
+            ],
           ),
         ],
       ),
@@ -181,58 +197,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _showTasks() {
+  _showMeasurements() {
     return Expanded(
       child: Obx(() {
-        if (_taskController.taskList.isEmpty) {
-          return _noTaskMsg();
+        if (_measurementController.measurementList.isEmpty) {
+          return _noMeasurementMsg();
         } else {
           return ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: _taskController.taskList.length,
+              itemCount: _measurementController.measurementList.length,
               itemBuilder: (context, index) {
-                Task task = _taskController.taskList[index];
-                if (task.repeat == 'Daily') {
-                  var hour = task.startTime.toString().split(":")[0];
-                  var minutes = task.startTime.toString().split(":")[1];
-                  debugPrint("My time is " + hour);
-                  debugPrint("My minute is " + minutes);
-                  DateTime date = DateFormat.jm().parse(task.startTime!);
-                  var myTime = DateFormat("HH:mm").format(date);
-
-                  // print("my date " + date.toString());
-                  // print("my time " + myTime);
-                  // var t = DateFormat("M/d/yyyy hh:mm a")
-                  //     .parse(task.date! + " " + task.startTime!);
-                  // print(t);
-                  // print(int.parse(myTime.toString().split(":")[0]));
-                  //
-                  // notifyHelper.scheduledNotification(
-                  //     int.parse(myTime.toString().split(":")[0]),
-                  //     int.parse(myTime.toString().split(":")[1]),
-                  //     task);
-
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 500),
-                    child: SlideAnimation(
-                      horizontalOffset: 300.0,
-                      child: FadeInAnimation(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  showBottomSheet(context, task);
-                                },
-                                child: TaskTile(task)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }
-                if (task.date == DateFormat.yMd().format(_selectedDate)) {
+                Measurement measurement = _measurementController.measurementList[index];
+                if (measurement.date ==
+                    DateFormat.yMd().format(_selectedDate)) {
                   //notifyHelper.scheduledNotification();
                   return AnimationConfiguration.staggeredList(
                     position: index,
@@ -245,9 +222,9 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             GestureDetector(
                                 onTap: () {
-                                  showBottomSheet(context, task);
+                                  showBottomSheet(context, measurement);
                                 },
-                                child: TaskTile(task)),
+                                child: MeasurementTile(measurement)),
                           ],
                         ),
                       ),
@@ -262,13 +239,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  showBottomSheet(BuildContext context, Task task) {
+  showBottomSheet(BuildContext context, Measurement measurement) {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.only(top: 4),
-        height: task.isCompleted == 1
-            ? SizeConfig.screenHeight! * 0.24
-            : SizeConfig.screenHeight! * 0.32,
+        height: SizeConfig.screenHeight! * 0.24,
         width: SizeConfig.screenWidth,
         color: Get.isDarkMode ? darkHeaderClr : Colors.white,
         child: Column(children: [
@@ -277,22 +252,15 @@ class _HomePageState extends State<HomePage> {
             width: 120,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
+                color: Get.isDarkMode
+                    ? Colors.grey.shade600
+                    : Colors.grey.shade300),
           ),
           const Spacer(),
-          task.isCompleted == 1
-              ? Container()
-              : _buildBottomSheetButton(
-                  label: "Task Completed",
-                  onTap: () {
-                    _taskController.markTaskCompleted(task.id!);
-                    Get.back();
-                  },
-                  clr: primaryClr),
           _buildBottomSheetButton(
-              label: "Delete Task",
+              label: "Delete Measurement",
               onTap: () {
-                _taskController.deleteTask(task);
+                _measurementController.deleteMeasurement(measurement);
                 Get.back();
               },
               clr: Colors.red.shade300),
@@ -347,7 +315,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _noTaskMsg() {
+  _noMeasurementMsg() {
     return Stack(
       children: [
         SingleChildScrollView(
@@ -365,7 +333,7 @@ class _HomePageState extends State<HomePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 child: Text(
-                  "You do not have any tasks yet!\nAdd new tasks to make your days productive.",
+                  "You do not have any measurement yet!\nAdd new measurements to keep trace of that.",
                   textAlign: TextAlign.center,
                   style: subTitleTextStyle,
                 ),
