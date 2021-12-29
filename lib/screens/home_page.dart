@@ -99,7 +99,9 @@ class _HomePageState extends State<HomePage> {
               MyButton(
                 icon: Icons.alarm_add,
                 onTap: () async {
-                  await Get.to(() => AddNotificationPage(notifyHelper: notifyHelper,));
+                  await Get.to(() => AddNotificationPage(
+                        notifyHelper: notifyHelper,
+                      ));
                   _measurementController.getMeasurements();
                 },
               ),
@@ -109,7 +111,9 @@ class _HomePageState extends State<HomePage> {
               MyButton(
                 icon: FontAwesomeIcons.eyeDropper,
                 onTap: () async {
-                  await Get.to(() => AddMeasurementPage(notifyHelper: notifyHelper,));
+                  await Get.to(() => AddMeasurementPage(
+                        notifyHelper: notifyHelper,
+                      ));
                   _measurementController.getMeasurements();
                 },
                 color: Colors.red,

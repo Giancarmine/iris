@@ -34,6 +34,9 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
     5,
   ];
 
+  String _selectedRepeat = "None";
+  List<String> repeatList = ["None", "Daily", "Weekly"];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,25 +65,52 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
                   },
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: MyInputField(
-                      title: "Start Date",
-                      hint: _startTime,
-                      widget: IconButton(
-                        onPressed: () {
-                          _getTimeFormUser(isStartTime: true);
-                        },
-                        icon: const Icon(
-                          Icons.access_time_rounded,
-                          color: Colors.grey,
-                        ),
-                      ),
+              Expanded(
+                child: MyInputField(
+                  title: "Start Date",
+                  hint: _startTime,
+                  widget: IconButton(
+                    onPressed: () {
+                      _getTimeFormUser(isStartTime: true);
+                    },
+                    icon: const Icon(
+                      Icons.access_time_rounded,
+                      color: Colors.grey,
                     ),
                   ),
-                ],
+                ),
               ),
+              // MyInputField(
+              //   title: "Repeat",
+              //   hint: _selectedRepeat,
+              //   widget: DropdownButton(
+              //     icon: const Icon(
+              //       Icons.keyboard_arrow_down,
+              //       color: Colors.grey,
+              //     ),
+              //     iconSize: 32,
+              //     style: subTitleStyle,
+              //     underline: Container(
+              //       height: 0,
+              //     ),
+              //     onChanged: (String? newValue) {
+              //       setState(() {
+              //         _selectedRepeat = newValue!;
+              //       });
+              //     },
+              //     elevation: 4,
+              //     items:
+              //         repeatList.map<DropdownMenuItem<String>>((String? value) {
+              //       return DropdownMenuItem<String>(
+              //         value: value,
+              //         child: Text(
+              //           value!,
+              //           style: const TextStyle(color: Colors.grey),
+              //         ),
+              //       );
+              //     }).toList(),
+              //   ),
+              // ),
               const SizedBox(height: 18),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -100,7 +130,7 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
   _validateData() {
     if (_valueController.text.isNotEmpty &&
         _valueController.text.isNumericOnly) {
-      _addMeasurementToDB();
+      _addNotificationToDB();
       if (_selectedReminder != 0) {
         // notifyHelper.scheduledNotification('It is the time!',
         //     'Let\'s add a new measurement', _selectedReminder);
@@ -121,7 +151,7 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
     }
   }
 
-  _addMeasurementToDB() async {
+  _addNotificationToDB() async {
     int value = await _measurementController.addMeasurement(
       measurement: Measurement(
         value: int.parse(_valueController.text),

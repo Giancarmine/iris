@@ -1,10 +1,12 @@
 import 'package:iris/models/measurement.dart';
+import 'package:iris/models/notification.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
   static Database? _db;
   static const int _version = 1;
   static const String _measurementsTableName = "measurements";
+  static const String _notificationsTableName = "notifications";
 
   static Future<void> initDB() async {
     if (_db != null) {
@@ -17,14 +19,21 @@ class DBHelper {
         print("creating a new db");
         return db.execute(
           "CREATE TABLE $_measurementsTableName ("
-          "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-          "value INTEGER, "
-          "note TEXT, "
-          "date STRING, "
-          "time STRING, "
-          "remind INTEGER, "
-          "color INTEGER, "
-          "type INTEGER)",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "value INTEGER, "
+            "note TEXT, "
+            "date STRING, "
+            "time STRING, "
+            "remind INTEGER, "
+            "color INTEGER, "
+            "type INTEGER);"
+          "CREATE TABLE $_notificationsTableName ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "date STRING, "
+            "time STRING, "
+            "remind INTEGER, "
+            "color INTEGER, "
+            "type INTEGER);",
         );
       });
     } catch (e) {
@@ -33,15 +42,30 @@ class DBHelper {
   }
 
   static Future<int> insertMeasurement(Measurement? measurement) async {
-    print("Insert function called");
+    print("InsertMeasurement function called");
     return await _db!.insert(_measurementsTableName, measurement!.toJson());
   }
 
-  static Future<int> deleteMeasurement(Measurement measurement) async =>
-      await _db!.delete(_measurementsTableName, where: 'id = ?', whereArgs: [measurement.id]);
+  static Future<int> insertNotification(Notification? notification) async {
+    print("InsertNotification function called");
+    return await _db!.insert(_notificationsTableName, notification!.toJson());
+  }
 
-  static Future<List<Map<String, dynamic>>> queryMeasurement() async {
-    print("query function called");
+  static Future<int> deleteMeasurement(Measurement measurement) async =>
+      await _db!.delete(_measurementsTableName,
+          where: 'id = ?', whereArgs: [measurement.id]);
+
+  static Future<int> deleteNotification(Notification notification) async =>
+      await _db!.delete(_notificationsTableName,
+          where: 'id = ?', whereArgs: [notification.id]);
+
+  static Future<List<Map<String, dynamic>>> queryMeasurements() async {
+    print("queryMeasurements function called");
     return _db!.query(_measurementsTableName);
+  }
+
+  static Future<List<Map<String, dynamic>>> queryNotifications() async {
+    print("queryNotifications function called");
+    return _db!.query(_notificationsTableName);
   }
 }
