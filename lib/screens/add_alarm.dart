@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:iris/controllers/measurement_controller.dart';
-import 'package:iris/models/measurement.dart';
+import 'package:iris/controllers/alarm_controller.dart';
+import 'package:iris/models/alarm.dart';
 import 'package:iris/utils/theme.dart';
 import 'package:iris/widgets/button.dart';
 import 'package:iris/widgets/input_field.dart';
 
-class AddNotificationPage extends StatefulWidget {
-  AddNotificationPage({Key? key, this.notifyHelper}) : super(key: key);
+class AddAlarmPage extends StatefulWidget {
+  const AddAlarmPage({Key? key, this.notifyHelper}) : super(key: key);
 
-  final notifyHelper;
+  final dynamic notifyHelper;
 
   @override
-  State<AddNotificationPage> createState() => _AddNotificationPageState();
+  State<AddAlarmPage> createState() => _AddAlarmPageState();
 }
 
-class _AddNotificationPageState extends State<AddNotificationPage> {
-  final MeasurementController _measurementController =
-      Get.put(MeasurementController());
+class _AddAlarmPageState extends State<AddAlarmPage> {
+  final AlarmController _alarmController = Get.put(AlarmController());
 
-  final TextEditingController _valueController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
-  int _selectedReminder = 2;
+  final int _selectedReminder = 2;
   List<int> reminderList = [
     0,
     1,
@@ -49,7 +46,7 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Add Notification",
+                "Add Alarm",
                 style: headingStyle,
               ),
               MyInputField(
@@ -80,44 +77,44 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
                   ),
                 ),
               ),
-              // MyInputField(
-              //   title: "Repeat",
-              //   hint: _selectedRepeat,
-              //   widget: DropdownButton(
-              //     icon: const Icon(
-              //       Icons.keyboard_arrow_down,
-              //       color: Colors.grey,
-              //     ),
-              //     iconSize: 32,
-              //     style: subTitleStyle,
-              //     underline: Container(
-              //       height: 0,
-              //     ),
-              //     onChanged: (String? newValue) {
-              //       setState(() {
-              //         _selectedRepeat = newValue!;
-              //       });
-              //     },
-              //     elevation: 4,
-              //     items:
-              //         repeatList.map<DropdownMenuItem<String>>((String? value) {
-              //       return DropdownMenuItem<String>(
-              //         value: value,
-              //         child: Text(
-              //           value!,
-              //           style: const TextStyle(color: Colors.grey),
-              //         ),
-              //       );
-              //     }).toList(),
-              //   ),
-              // ),
+              MyInputField(
+                title: "Repeat",
+                hint: _selectedRepeat,
+                widget: DropdownButton(
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
+                  iconSize: 32,
+                  elevation: 4,
+                  style: subTitleStyle,
+                  underline: Container(
+                    height: 0,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedRepeat = newValue!;
+                    });
+                  },
+                  items:
+                      repeatList.map<DropdownMenuItem<String>>((String? value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value!,
+                        // style: const TextStyle(color: Colors.grey),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
               const SizedBox(height: 18),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   MyButton(
-                      label: "Add Notification", onTap: () => _validateData())
+                      label: "Add Alarm", onTap: () => _validateData())
                 ],
               )
             ],
@@ -128,43 +125,27 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
   }
 
   _validateData() {
-    if (_valueController.text.isNotEmpty &&
-        _valueController.text.isNumericOnly) {
-      _addNotificationToDB();
-      if (_selectedReminder != 0) {
-        // notifyHelper.scheduledNotification('It is the time!',
-        //     'Let\'s add a new measurement', _selectedReminder);
-      }
-      Get.back();
-    } else {
-      Get.snackbar(
-        "Required",
-        "Please insert the measurement value!",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.white,
-        colorText: pinkClr,
-        icon: const Icon(
-          Icons.warning_amber_rounded,
-          color: Colors.red,
-        ),
-      );
+    _addAlarmToDB();
+    if (_selectedReminder != 0) {
+      // notifyHelper.scheduledNotification('It is the time!',
+      //     'Let\'s add a new measurement', _selectedReminder);
     }
+    Get.back();
   }
 
-  _addNotificationToDB() async {
-    int value = await _measurementController.addMeasurement(
-      measurement: Measurement(
-        value: int.parse(_valueController.text),
-        note: _noteController.text,
+  _addAlarmToDB() async {
+    int value = await _alarmController.addAlarm(
+      alarm: Alarm(
         date: DateFormat.yMd().format(_selectedDate),
         time: _startTime,
-        color: _evaluateColor(),
+        color: 0,
         remind: _selectedReminder,
-        type: 0,
+        type: 1,
+        repeat: "I am a String",
       ),
     );
 
-    print("My value is $value");
+    print("Notification added");
   }
 
   _appBar(BuildContext context) {
@@ -222,22 +203,6 @@ class _AddNotificationPageState extends State<AddNotificationPage> {
         _startTime = _formattedTime;
       });
     }
-  }
-
-  _evaluateColor() {
-    int? result = 0;
-    int value = int.parse(_valueController.text);
-    if (value >= 60 && value <= 110) {
-      result = 1;
-    } else if (value > 110 && value <= 125) {
-      result = 2;
-    } else if (value >= 126 && value < 140) {
-      result = 3;
-    } else if (value >= 140 && value <= 200) {
-      result = 4;
-    }
-
-    return result;
   }
 
   _showTimePicker() {

@@ -8,9 +8,9 @@ import 'package:iris/widgets/button.dart';
 import 'package:iris/widgets/input_field.dart';
 
 class AddMeasurementPage extends StatefulWidget {
-  AddMeasurementPage({Key? key, this.notifyHelper}) : super(key: key);
+  const AddMeasurementPage({Key? key, this.notifyHelper}) : super(key: key);
 
-  final notifyHelper;
+  final dynamic notifyHelper;
 
   @override
   State<AddMeasurementPage> createState() => _AddMeasurementPageState();
