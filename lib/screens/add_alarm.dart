@@ -32,7 +32,11 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
   ];
 
   String _selectedRepeat = "None";
-  List<String> repeatList = ["None", "Daily", "Weekly"];
+  List<String> repeatList = [
+    "None",
+    "Daily",
+    "Weekly",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -62,20 +66,24 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
                   },
                 ),
               ),
-              Expanded(
-                child: MyInputField(
-                  title: "Start Date",
-                  hint: _startTime,
-                  widget: IconButton(
-                    onPressed: () {
-                      _getTimeFormUser(isStartTime: true);
-                    },
-                    icon: const Icon(
-                      Icons.access_time_rounded,
-                      color: Colors.grey,
+              Row(
+                children: [
+                  Expanded(
+                    child: MyInputField(
+                      title: "Start Date",
+                      hint: _startTime,
+                      widget: IconButton(
+                        onPressed: () {
+                          _getTimeFormUser(isStartTime: true);
+                        },
+                        icon: const Icon(
+                          Icons.access_time_rounded,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
               MyInputField(
                 title: "Repeat",
@@ -113,8 +121,7 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  MyButton(
-                      label: "Add Alarm", onTap: () => _validateData())
+                  MyButton(label: "Add Alarm", onTap: () => _validateData())
                 ],
               )
             ],
@@ -141,11 +148,11 @@ class _AddAlarmPageState extends State<AddAlarmPage> {
         color: 0,
         remind: _selectedReminder,
         type: 1,
-        repeat: "I am a String",
+        repeat: _selectedRepeat,
       ),
     );
 
-    print("Notification added");
+    print("Alarm added");
   }
 
   _appBar(BuildContext context) {
