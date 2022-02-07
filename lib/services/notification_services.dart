@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:iris/screens/add_measurement.dart';
+import 'package:logger/logger.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotifyHelper {
+  static var logger = Logger();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -33,9 +35,9 @@ class NotifyHelper {
 
   Future selectNotification(String? payload) async {
     if (payload != null) {
-      print('notification payload: $payload');
+      logger.d('notification payload: $payload');
     } else {
-      print("Notification Done");
+      logger.d("Notification Done");
     }
     Get.to(() => AddMeasurementPage());
   }
@@ -101,7 +103,7 @@ class NotifyHelper {
   }
 
   displayNotification({required String title, required String body}) async {
-    print("doing test");
+    logger.d("doing test");
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
         importance: Importance.max, priority: Priority.high);

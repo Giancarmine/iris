@@ -1,7 +1,9 @@
 import 'package:iris/models/measurement.dart';
+import 'package:logger/logger.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
+  static var logger = Logger();
   static Database? _db;
   static const int _version = 1;
   static const String _measurementsTableName = "measurements";
@@ -14,7 +16,7 @@ class DBHelper {
       String _path = await getDatabasesPath() + "iris.db";
       _db =
           await openDatabase(_path, version: _version, onCreate: (db, version) {
-        print("creating a new db");
+        logger.d("creating a new db");
         return db.execute(
           "CREATE TABLE $_measurementsTableName ("
           "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -28,20 +30,21 @@ class DBHelper {
         );
       });
     } catch (e) {
-      print(e);
+      logger.d(e);
     }
   }
 
   static Future<int> insertMeasurement(Measurement? measurement) async {
-    print("Insert function called");
+    logger.d("Insert function called");
     return await _db!.insert(_measurementsTableName, measurement!.toJson());
   }
 
   static Future<int> deleteMeasurement(Measurement measurement) async =>
-      await _db!.delete(_measurementsTableName, where: 'id = ?', whereArgs: [measurement.id]);
+      await _db!.delete(_measurementsTableName,
+          where: 'id = ?', whereArgs: [measurement.id]);
 
   static Future<List<Map<String, dynamic>>> queryMeasurement() async {
-    print("query function called");
+    logger.d("query function called");
     return _db!.query(_measurementsTableName);
   }
 }
