@@ -12,6 +12,7 @@ class DBHelper {
 
   static Future<void> initDB() async {
     if (_db != null) {
+      _onCreate(_db!);
       return;
     }
     try {
@@ -19,31 +20,38 @@ class DBHelper {
       _db =
           await openDatabase(_path, version: _version, onCreate: (db, version) {
         logger.d("creating a new db");
-        db.execute(
-          "CREATE TABLE $_measurementsTableName ("
-          "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-          "value INTEGER, "
-          "note TEXT, "
-          "date STRING, "
-          "time STRING, "
-          "remind INTEGER, "
-          "color INTEGER, "
-          "type INTEGER)",
-        );
-        db.execute(
-          "CREATE TABLE $_alarmsTableName ("
-          "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-          "date STRING, "
-          "time STRING, "
-          "remind INTEGER, "
-          "color INTEGER, "
-          "type INTEGER,"
-          "repeat STRING)",
-        );
       });
+      _onCreate(_db!);
     } catch (e) {
-      logger.d(e);
+      logger.e(e);
     }
+  }
+
+  static Future<void> _onCreate(Database db) async {
+    logger.d("creating $_measurementsTableName table");
+    db.execute(
+      "CREATE TABLE $_measurementsTableName ("
+      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      "value INTEGER, "
+      "note TEXT, "
+      "date STRING, "
+      "time STRING, "
+      "remind INTEGER, "
+      "color INTEGER, "
+      "type INTEGER)",
+    );
+
+    logger.d("creating $_alarmsTableName table");
+    db.execute(
+      "CREATE TABLE $_alarmsTableName ("
+      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      "date STRING, "
+      "time STRING, "
+      "remind INTEGER, "
+      "color INTEGER, "
+      "type INTEGER,"
+      "repeat STRING)",
+    );
   }
 
   static Future<int> insertMeasurement(Measurement? measurement) async {
