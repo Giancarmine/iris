@@ -6,6 +6,7 @@ import 'package:iris/models/measurement.dart';
 import 'package:iris/utils/theme.dart';
 import 'package:iris/widgets/button.dart';
 import 'package:iris/widgets/input_field.dart';
+import 'package:logger/logger.dart';
 
 class AddMeasurementPage extends StatefulWidget {
   const AddMeasurementPage({Key? key, this.notifyHelper}) : super(key: key);
@@ -17,6 +18,7 @@ class AddMeasurementPage extends StatefulWidget {
 }
 
 class _AddMeasurementPageState extends State<AddMeasurementPage> {
+  static var logger = Logger();
   final MeasurementController _measurementController =
       Get.put(MeasurementController());
 
@@ -172,7 +174,7 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
       ),
     );
 
-    print("My value is $value");
+    logger.d("My value is $value");
   }
 
   _appBar(BuildContext context) {
@@ -212,10 +214,10 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
     if (_pickerDate != null) {
       setState(() {
         _selectedDate = _pickerDate;
-        print(_selectedDate);
+        logger.d(_selectedDate);
       });
     } else {
-      print("It's null or something is wrong");
+      logger.d("It's null or something is wrong");
     }
   }
 
@@ -224,7 +226,7 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
     String _formattedTime = pickedTime.format(context);
 
     if (pickedTime == null) {
-      print("Time cancelled");
+      logger.d("Time cancelled");
     } else if (isStartTime == true) {
       setState(() {
         _startTime = _formattedTime;
