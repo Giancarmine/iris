@@ -63,7 +63,7 @@ class DBHelper {
   static Future<int> deleteAlarm(Alarm alarm) async => await _db!
       .delete(_alarmsTableName, where: 'id = ?', whereArgs: [alarm.id]);
 
-  static Future<List<Map<String, dynamic>>> queryMeasurement() async {
+  static Future<List<Map<String, dynamic>>> queryMeasurements() async {
     logger.d("query function called");
     return _db!.query(_measurementsTableName);
   }
