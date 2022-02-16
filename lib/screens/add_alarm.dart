@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:iris/controllers/measurement_controller.dart';
-import 'package:iris/models/measurement.dart';
+import 'package:iris/controllers/alarm_controller.dart';
+import 'package:iris/models/alarm.dart';
 import 'package:iris/utils/theme.dart';
 import 'package:iris/widgets/button.dart';
 import 'package:iris/widgets/input_field.dart';
-import 'package:logger/logger.dart';
 
-class AddMeasurementPage extends StatefulWidget {
-  const AddMeasurementPage({Key? key, this.notifyHelper}) : super(key: key);
+class AddAlarmPage extends StatefulWidget {
+  const AddAlarmPage({Key? key, this.notifyHelper}) : super(key: key);
 
   final dynamic notifyHelper;
 
   @override
-  State<AddMeasurementPage> createState() => _AddMeasurementPageState();
+  State<AddAlarmPage> createState() => _AddAlarmPageState();
 }
 
-class _AddMeasurementPageState extends State<AddMeasurementPage> {
-  static var logger = Logger();
-  final MeasurementController _measurementController =
-      Get.put(MeasurementController());
+class _AddAlarmPageState extends State<AddAlarmPage> {
+  final AlarmController _alarmController = Get.put(AlarmController());
 
-  final TextEditingController _valueController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
-  int _selectedReminder = 2;
+  final int _selectedReminder = 2;
   List<int> reminderList = [
     0,
     1,
@@ -34,6 +29,13 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
     3,
     4,
     5,
+  ];
+
+  String _selectedRepeat = "None";
+  List<String> repeatList = [
+    "None",
+    "Daily",
+    "Weekly",
   ];
 
   @override
@@ -48,19 +50,9 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Add Measurement",
+                "Add Alarm",
                 style: headingStyle,
               ),
-              MyInputField(
-                title: "Diabetes value",
-                hint: "Enter the measured value",
-                controller: _valueController,
-                keyboardType: TextInputType.number,
-              ),
-              MyInputField(
-                  title: "Note",
-                  hint: "Enter a note",
-                  controller: _noteController),
               MyInputField(
                 title: "Date",
                 hint: DateFormat.yMd().format(_selectedDate),
@@ -94,8 +86,8 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
                 ],
               ),
               MyInputField(
-                title: "Reminder",
-                hint: "$_selectedReminder hours after",
+                title: "Repeat",
+                hint: _selectedRepeat,
                 widget: DropdownButton(
                   icon: const Icon(
                     Icons.keyboard_arrow_down,
@@ -109,14 +101,17 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
                   ),
                   onChanged: (String? newValue) {
                     setState(() {
-                      _selectedReminder = int.parse(newValue!);
+                      _selectedRepeat = newValue!;
                     });
                   },
                   items:
-                      reminderList.map<DropdownMenuItem<String>>((int value) {
+                      repeatList.map<DropdownMenuItem<String>>((String? value) {
                     return DropdownMenuItem<String>(
-                      value: value.toString(),
-                      child: Text(value.toString()),
+                      value: value,
+                      child: Text(
+                        value!,
+                        // style: const TextStyle(color: Colors.grey),
+                      ),
                     );
                   }).toList(),
                 ),
@@ -126,8 +121,7 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  MyButton(
-                      label: "Add Measurement", onTap: () => _validateData())
+                  MyButton(label: "Add Alarm", onTap: () => _validateData())
                 ],
               )
             ],
@@ -138,43 +132,27 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
   }
 
   _validateData() {
-    if (_valueController.text.isNotEmpty &&
-        _valueController.text.isNumericOnly) {
-      _addMeasurementToDB();
-      if (_selectedReminder != 0) {
-        // notifyHelper.scheduledNotification('It is the time!',
-        //     'Let\'s add a new measurement', _selectedReminder);
-      }
-      Get.back();
-    } else {
-      Get.snackbar(
-        "Required",
-        "Please insert the measurement value!",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.white,
-        colorText: pinkClr,
-        icon: const Icon(
-          Icons.warning_amber_rounded,
-          color: Colors.red,
-        ),
-      );
+    _addAlarmToDB();
+    if (_selectedReminder != 0) {
+      // notifyHelper.scheduledNotification('It is the time!',
+      //     'Let\'s add a new measurement', _selectedReminder);
     }
+    Get.back();
   }
 
-  _addMeasurementToDB() async {
-    int value = await _measurementController.addMeasurement(
-      measurement: Measurement(
-        value: int.parse(_valueController.text),
-        note: _noteController.text,
+  _addAlarmToDB() async {
+    int value = await _alarmController.addAlarm(
+      alarm: Alarm(
         date: DateFormat.yMd().format(_selectedDate),
         time: _startTime,
-        color: _evaluateColor(),
+        color: 0,
         remind: _selectedReminder,
-        type: 0,
+        type: 1,
+        repeat: _selectedRepeat,
       ),
     );
 
-    logger.d("My value is $value");
+    print("Alarm added");
   }
 
   _appBar(BuildContext context) {
@@ -214,10 +192,10 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
     if (_pickerDate != null) {
       setState(() {
         _selectedDate = _pickerDate;
-        logger.d(_selectedDate);
+        print(_selectedDate);
       });
     } else {
-      logger.d("It's null or something is wrong");
+      print("It's null or something is wrong");
     }
   }
 
@@ -226,28 +204,12 @@ class _AddMeasurementPageState extends State<AddMeasurementPage> {
     String _formattedTime = pickedTime.format(context);
 
     if (pickedTime == null) {
-      logger.d("Time cancelled");
+      print("Time cancelled");
     } else if (isStartTime == true) {
       setState(() {
         _startTime = _formattedTime;
       });
     }
-  }
-
-  _evaluateColor() {
-    int? result = 0;
-    int value = int.parse(_valueController.text);
-    if (value >= 60 && value <= 110) {
-      result = 1;
-    } else if (value > 110 && value <= 125) {
-      result = 2;
-    } else if (value >= 126 && value < 140) {
-      result = 3;
-    } else if (value >= 140 && value <= 200) {
-      result = 4;
-    }
-
-    return result;
   }
 
   _showTimePicker() {

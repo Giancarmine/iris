@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:iris/controllers/measurement_controller.dart';
 import 'package:iris/models/measurement.dart';
 import 'package:iris/screens/add_measurement.dart';
+import 'package:iris/screens/add_alarm.dart';
 import 'package:iris/services/notification_services.dart';
 import 'package:iris/services/theme_services.dart';
 import 'package:iris/utils/size_config.dart';
@@ -98,7 +99,9 @@ class _HomePageState extends State<HomePage> {
               MyButton(
                 icon: Icons.alarm_add,
                 onTap: () async {
-                  // await Get.to(const AddReminderPage());
+                  await Get.to(() => AddAlarmPage(
+                        notifyHelper: notifyHelper,
+                      ));
                   _measurementController.getMeasurements();
                 },
               ),
@@ -108,7 +111,9 @@ class _HomePageState extends State<HomePage> {
               MyButton(
                 icon: FontAwesomeIcons.eyeDropper,
                 onTap: () async {
-                  await Get.to(() => AddMeasurementPage(notifyHelper: notifyHelper,));
+                  await Get.to(() => AddMeasurementPage(
+                        notifyHelper: notifyHelper,
+                      ));
                   _measurementController.getMeasurements();
                 },
                 color: Colors.red,

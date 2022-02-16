@@ -9,15 +9,17 @@ class MeasurementController extends GetxController {
     super.onReady();
   }
 
-  final measurementList = [].obs;
+  var measurementList = <Measurement>[].obs;
 
   Future<int> addMeasurement({Measurement? measurement}) async {
     return await DBHelper.insertMeasurement(measurement);
   }
 
   void getMeasurements() async {
-    List<Map<String, dynamic>> measurements = await DBHelper.queryMeasurement();
-    measurementList.assignAll(measurements.map((data) => Measurement.fromJson(data)).toList());
+    List<Map<String, dynamic>> measurements =
+        await DBHelper.queryMeasurements();
+    measurementList.assignAll(
+        measurements.map((data) => Measurement.fromJson(data)).toList());
   }
 
   void deleteMeasurement(Measurement measurement) async {
