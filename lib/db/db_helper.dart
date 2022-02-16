@@ -17,7 +17,7 @@ class DBHelper {
       _db =
           await openDatabase(_path, version: _version, onCreate: (db, version) {
         print("creating a new db");
-        return db.execute(
+        db.execute(
           "CREATE TABLE $_measurementsTableName ("
           "id INTEGER PRIMARY KEY AUTOINCREMENT,"
           "value INTEGER, "
@@ -26,7 +26,9 @@ class DBHelper {
           "time STRING, "
           "remind INTEGER, "
           "color INTEGER, "
-          "type INTEGER);"
+          "type INTEGER)",
+        );
+        db.execute(
           "CREATE TABLE $_alarmsTableName ("
           "id INTEGER PRIMARY KEY AUTOINCREMENT,"
           "date STRING, "
@@ -34,7 +36,7 @@ class DBHelper {
           "remind INTEGER, "
           "color INTEGER, "
           "type INTEGER,"
-          "repeat STRING);",
+          "repeat STRING)",
         );
       });
     } catch (e) {
