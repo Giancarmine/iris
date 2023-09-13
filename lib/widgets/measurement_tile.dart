@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iris/models/measurement.dart';
 import 'package:iris/utils/size_config.dart';
@@ -8,7 +7,7 @@ import 'package:iris/utils/theme.dart';
 class MeasurementTile extends StatelessWidget {
   final Measurement measurement;
 
-  MeasurementTile(this.measurement);
+  const MeasurementTile(this.measurement, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +48,7 @@ class MeasurementTile extends StatelessWidget {
                         children: [
                           const SizedBox(width: 10),
                           Icon(
-                            FlutterIcons.clock_faw5,
+                            Icons.access_time,
                             color: Colors.grey.shade200,
                             size: 18,
                           ),
